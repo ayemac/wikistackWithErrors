@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const morgan = require("morgan");
 const path = require("path");
+const { notFoundPage, internalServerError } = require("./views");
 
 app.use(morgan("dev")); //logging middleware
 app.use(express.static(path.join(__dirname, "./public"))); //serving up static files (e.g. css files)
@@ -15,4 +16,16 @@ app.get('/', function (req, res) {
    res.redirect('/wiki/');
 });
 
+app.use((req, res, next)=>{
+    res.status(404).send(notFoundPage())
+});
+
+app.use((err, req, res, next) => {
+    console.error(err.stack)
+    res.status(500).send(internalServerError(err))
+});
+
+
+
 module.exports = app;
+
